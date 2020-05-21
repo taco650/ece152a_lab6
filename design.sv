@@ -82,6 +82,22 @@ module timercounter(input clk,
                     input [6:0] timer, 
                     input writeEnable, 
                     input decrEnable, 
+                    input reset,
                     output reg [6:0] timercount);
 
+    reg [6:0] timervalue;
+     
+    always @(posedge clk or posedge writeEnable ) begin
+        if(writeEnable) begin
+            timervalue = timer;
+        end
+        if(reset) begin
+            timervalue = 60;
+        end
+        else if(decrEnable) begin 
+            if (timercount != 0) begin
+                timercount = timervalue - 1'b1;
+            end
+        end
+    end
 endmodule
