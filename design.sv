@@ -21,4 +21,22 @@ module controller ( input clk ,
     // 2. Monitor door_status and cancel_button ( analogous to reset in Lab4 )
     // 3. Monitor start_button ( analogous to enable in Lab4 )
     // 4. state_display consists of 4 - alphabets based on the state of the controller . Use 7 - segment display representation to display the state .
+    always @(posedge clk or cancel_button or door_status) begin
+        if(cancel_button == 1) begin
+            state = 0; //reset timer to 0
+        end 
+        else begin
+            
+        end
+    end
+
+
+endmodule
+
+module timercounter(input clk, 
+                    input [6:0] timer, 
+                    input writeEnable, 
+                    input decrEnable, 
+                    output reg [6:0] timercount);
+
 endmodule
