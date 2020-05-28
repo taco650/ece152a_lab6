@@ -53,51 +53,7 @@ initial begin
 
     #CLK timer <= 7'b111100; // timer is reset to 60s
     door_status = 1; // 1 clock cycle to remove food and door is closed
-    
-    //Possible scenario 2
-    door_status = 0; //open door, place food
-    door_status = 1; //close door
-    power <= 0; //set power (HALF)
-    timer <= 7'b1100100; //set timer (100s)
-    start_button <= 1; 
-    #5 start_button <= 0;
-    #(40*CLK) //wait for 40 seconds
-    door_status <= 0; //open door, remove food, place food back
-    door_status = 1; //close door
-    start_button <= 1; //press start button
-    #5 start_button <= 0;
-    #(60*CLK+5) //wait for cooking to finish
-    door_status <= 0; //open door
 
-    #CLK timer <= 7'b111100; // timer is reset to 60s
-    door_status = 1; // 1 clock cycle to remove food and door is closed
-
-    //Possible scenario 3
-    door_status = 0; //open door, place food
-    door_status = 1; //close door
-    power <= 0; //set power (FULL)
-    timer <= 7'b1100100; //set timer (100s)
-    start_button <= 1; //push button
-    #5 start_button <= 0;
-    #(30*CLK) //wait for 30 seconds
-    door_status = 0; //open door, remove food, place food back
-    door_status = 1; //close door
-    timer <= 7'b110010; //reset timer (50 seconds)
-    #(CLK*50+5) //wait for cooking to finish
-    door_status = 0; //open door, remove food
-    door_status = 1; //close door
-
-    //Possible scenario 4
-    door_status = 0; //open door, place food
-    door_status = 1; //close door
-    power <= 0; //set power (FULL)
-    timer <= 7'b1100100; //set timer (100s)
-    start_button <= 1; //push button
-    #5 start_button <= 0;
-    #(30*CLK) //wait for 30 seconds
-    cancel_button <= 1; //press cancel button
-    #5 cancel_button <= 0;
-    door_status = 0; //open door
     
     // write test bench for possible scenarios 2 , 3 and 4
     // end simulation
