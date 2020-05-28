@@ -33,16 +33,25 @@ module controller ( input clk,
     
     inputController inputController(.state(state),
                                     .power(power),
-                                    .timerInput(timer),
                                     .validPower(valid_power),
-                                    .validTimer(valid_timer));
+                                    .decrEnable(decrEnable),
+                                    .writeEnable(writeEnable),
+                                    .reset(reset));
+
+
                                 
     timercounter timercounter(  .clk(clk), 
                                 .timer(timer), 
-                                .writeEnable(), 
-                                .decrEnable(), 
-                                .reset(),
+                                .writeEnable(writeEnable), 
+                                .decrEnable(decrEnable), 
+                                .reset(reset),
                                 .timercount(timerCount));
+
+    stateDisplay stateDisplay(  .state(state), 
+                                .state_display1(state_display1),
+                                .state_display2(state_display2), 
+                                .state_display3(state_display3), 
+                                .state_display4(state_display4));
 
 
 endmodule
@@ -93,6 +102,7 @@ module statemachine(input clk,
                     input cancel_button, 
                     output reg[4:0] state);
     
+    initial state = 4'b0;
     always @(posedge clk or cancel_button or door_status) begin
         if(cancel_button == 1) begin
             state = 0; //reset timer and return to S0
@@ -147,10 +157,10 @@ endmodule
 module inputController( input [4:0] state,
                         input power,
                         output reg validPower,
-                        output decrEnable,
-                        output writeEnable,
-                        output reset);
-    always @(*)begin
+                        output reg decrEnable,
+                        output reg writeEnable,
+                        output reg reset);
+    always @(state or power)begin
         if(state == 1 || state == 4) begin
             validPower = power;
             decrEnable = 0;
