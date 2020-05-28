@@ -63,23 +63,25 @@ module stateDisplay(input state,
     integer E = 7'b1001111;
     integer C = 7'b1001110;
 
-    if (state == 0 || state == 1) begin //IdLE
-        state_display1 = I;
-        state_display2 = d;
-        state_display3 = L;
-        state_display4 = E;
-    end
-    else if (state == 2 || state == 3 || state == 4 || state == 6) begin //PrOC
-        state_display1 = P;
-        state_display2 = r;
-        state_display3 = O;
-        state_display4 = C;
-    end
-    else if (state == 5) begin //dOnE
-        state_display1 = d;
-        state_display2 = O;
-        state_display3 = n;
-        state_display4 = E;
+    always @(state) begin
+        if (state == 0 || state == 1) begin //IdLE
+            state_display1 = I;
+            state_display2 = d;
+            state_display3 = L;
+            state_display4 = E;
+        end
+        else if (state == 2 || state == 3 || state == 4 || state == 6) begin //PrOC
+            state_display1 = P;
+            state_display2 = r;
+            state_display3 = O;
+            state_display4 = C;
+        end
+        else if (state == 5) begin //dOnE
+            state_display1 = d;
+            state_display2 = O;
+            state_display3 = n;
+            state_display4 = E;
+        end
     end
 endmodule
 
