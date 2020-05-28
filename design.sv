@@ -72,35 +72,35 @@ module stateDisplay(input [4:0] state,
                     output reg [6:0] state_display3, 
                     output reg [6:0] state_display4);
 
-    integer I = 7'b0110000;
-    integer P = 7'b1100111;
-    integer d = 7'b0111101;
-    integer r = 7'b0000101;
-    integer O = 7'b1111110;
-    integer L = 7'b0001110;
-    integer n = 7'b0010101;
-    integer E = 7'b1001111;
-    integer C = 7'b1001110;
+    integer I = 7'b0110000; //30
+    integer P = 7'b1100111; //67
+    integer d = 7'b0111101; //3d
+    integer r = 7'b0000101; //5
+    integer O = 7'b1111110; //7e
+    integer L = 7'b0001110; //e
+    integer n = 7'b0010101; //15
+    integer E = 7'b1001111; //4f
+    integer C = 7'b1001110; //4e
 
     always @(state) begin
         if (state == 0 || state == 1) begin //IdLE
-            state_display1 = I;
-            state_display2 = d;
-            state_display3 = L;
-            state_display4 = E;
+            state_display1 = I; //30
+            state_display2 = d; //3d
+            state_display3 = L; //e
+            state_display4 = E; //4f
         end
         else if (state == 2 || state == 3 || state == 4 || state == 6) begin //PrOC
-            state_display1 = P;
-            state_display2 = r;
-            state_display3 = O;
-            state_display4 = C;
+            state_display1 = P; //67
+            state_display2 = r; //5
+            state_display3 = O; //7e
+            state_display4 = C; //4e
         end
         else if (state == 5) begin //dOnE
-            state_display1 = d;
-            state_display2 = O;
-            state_display3 = n;
-            state_display4 = E;
-        end
+            state_display1 = d; //3d
+            state_display2 = O; //7e
+            state_display3 = n; //15
+            state_display4 = E; //4f
+        end 
     end
 endmodule
 
