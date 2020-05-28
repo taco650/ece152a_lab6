@@ -30,9 +30,7 @@ module controller ( input clk,
 
     inputController inputController(.clk(clk),
                                     .state(state),
-                                    .power(power),
                                     .door_status(door_status),
-                                    .validPower(valid_power),
                                     .decrEnable(decrEnable),
                                     .writeEnable(writeEnable),
                                     .reset(reset));
@@ -130,7 +128,7 @@ module statemachine(input clk,
                 state = 0;
             end
             */
-            if((state == 0 && door_status == 1) || (state == 3 && door_status == 1))begin
+            if((state == 0 || state == 3) && door_status == 1)begin
                 regPower = power;
             end
             if(start_button == 1 && state == 0 && regPower == 1) begin
@@ -149,7 +147,7 @@ module statemachine(input clk,
                 state = 4; //reprogram processing state (allowed reprogramming)
             end
 
-            else if(start_button == 1 && state == 4 && power == 1)begin
+            else if(start_button == 1 && state == 4 && regPower == 1)begin
                 state = 6;//microwaving/processing state on HIGH POWER
             end
 
@@ -174,44 +172,42 @@ endmodule
 module inputController( input clk,
                         input [4:0] state,
                         input door_status,
-                        input power,
-                        output reg validPower,
                         output reg decrEnable,
                         output reg writeEnable,
                         output reg reset);
 
-    initial validPower = 0;
+ 
     initial decrEnable = 0;
     initial writeEnable = 0;
     initial reset = 1;
-    always @(posedge clk or state or power or door_status)begin
+    always @(posedge clk or state or door_status)begin
         if( (state == 0 && door_status ==1) || state == 4) begin
-            validPower <= power;
-            decrEnable <= 0;
-            writeEnable <= 1;
-            reset <= 0;
+            
+            decrEnable = 0;
+            writeEnable = 1;
+            reset = 0;
         end
         else if(state == 0 && door_status == 0)begin
             //default values
-            validPower <= 0;
-            decrEnable <= 0;
-            writeEnable <= 0;
-            reset <= 1;
+          
+            decrEnable = 0;
+            writeEnable = 0;
+            reset = 1;
         end
         else if(state == 6 || state == 2)begin
-            decrEnable <= 1;
-            writeEnable <= 0;
-            reset <= 0;
+            decrEnable = 1;
+            writeEnable = 0;
+            reset = 0;
         end
         else if(state == 3)begin
-            decrEnable <= 0;
-            writeEnable <= 0;
-            reset <= 0;
+            decrEnable = 0;
+            writeEnable = 0;
+            reset = 0;
         end
         else if(state == 5) begin
-            decrEnable <= 0;
-            writeEnable <= 0;
-            reset <= 1;
+            decrEnable = 0;
+            writeEnable = 0;
+            reset = 1;
         end
     end
 
@@ -228,14 +224,14 @@ module timercounter(input clk,
     initial timercount = 60;
     always @(posedge clk or posedge writeEnable ) begin
         if(writeEnable) begin
-            timercount <= timer;
+            timercount = timer;
         end
         if(reset) begin
-            timercount <= 60;
+            timercount = 60;
         end
         else if(decrEnable) begin 
             if (timercount != 0) begin
-                timercount <= timercount - 1'b1;
+                timercount = timercount - 1'b1;
             end
         end
     end
