@@ -50,12 +50,14 @@ initial begin
     start_button <= 1; //push button
     #5 start_button <= 0;
     #(30*CLK) //wait for 30 seconds
-    door_status = 0; //open door, remove food, place food back
-    door_status = 1; //close door
+    door_status <= 0; //open door, remove food, place food back
+    #CLK
+    door_status <= 1; //close door
     timer <= 7'b110010; //reset timer (50 seconds)
     #(CLK*50+5) //wait for cooking to finish
-    door_status = 0; //open door, remove food
-    door_status = 1; //close door
+    door_status <= 0; //open door, remove food, place food back
+    #CLK
+    door_status <= 1; //close door
 
     
     // write test bench for possible scenarios 2 , 3 and 4
