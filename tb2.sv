@@ -51,7 +51,8 @@ initial begin
     #5 start_button <= 0;
     #(40*CLK) //wait for 40 seconds
     door_status <= 0; //open door, remove food, place food back
-    door_status = 1; //close door
+    #CLK
+    door_status <= 1; //close door
     start_button <= 1; //press start button
     #5 start_button <= 0;
     #(60*CLK+5) //wait for cooking to finish
