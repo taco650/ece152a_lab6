@@ -27,6 +27,7 @@ module controller ( input clk,
     wire decrEnable;
     wire reset;
     wire writeEnable;
+    wire [6:0] regTimer;
 
     inputController inputController(.clk(clk),
                                     .state(state),
@@ -38,10 +39,12 @@ module controller ( input clk,
     //state machine does not need power as input?
     statemachine statemachine(.clk(clk),
                               .power(power),
-                              .stateTimer(timercount),
+                              .stateTimer(timer),
+                              .stateTimerCount(timercount),
                               .door_status(door_status),
                               .start_button(start_button),
                               .cancel_button(cancel_button),
+                              .regTimer(regTimer),
                               .state(state));
     
  
@@ -49,7 +52,7 @@ module controller ( input clk,
 
                                 
     timercounter timercounter(  .clk(clk), 
-                                .timer(timer), 
+                                .timer(regTimer), 
                                 .writeEnable(writeEnable), 
                                 .decrEnable(decrEnable), 
                                 .reset(reset),
@@ -61,7 +64,7 @@ module controller ( input clk,
                                 .state_display3(state_display3), 
                                 .state_display4(state_display4));
 
-
+    assign time_display = timercount;
 endmodule
 
 module stateDisplay(input [4:0] state,
@@ -105,64 +108,49 @@ endmodule
 module statemachine(input clk,
                     input power,
                     input [6:0] stateTimer,
+                    input [6:0] stateTimerCount,
                     input door_status,
                     input start_button,
-                    input cancel_button, 
+                    input cancel_button,
+                    output reg[6:0] regTimer, 
                     output reg[4:0] state);
     
     initial state = 4'b0;
     reg regPower = 0;
- 
-    always @(posedge clk or cancel_button or door_status) begin
+    initial regTimer = 60;
+
+    always @(posedge clk or cancel_button or door_status or start_button) begin
         if(cancel_button == 1) begin
             state = 0; //reset timer and return to S0
         end 
-        else begin 
-            /*
-            if(door_status == 1 && state == 0) begin 
-                state = 1; //reprogram idle state
+        else if(door_status == 0) begin
+            if(state == 2 || state == 6)begin
+                state = 3; //stopped processing state (no programming allowed)
             end
-            */
-            /*
-            else if(door_status == 0 && state == 1)begin
+            else if(state == 5)begin
                 state = 0;
             end
-            */
-            if((state == 0 || state == 3) && door_status == 1)begin
+        end
+        else if(door_status == 1)begin
+            if((state == 0 || state == 3))begin
                 regPower = power;
+                regTimer = stateTimer;
             end
             if(start_button == 1 && state == 0 && regPower == 1) begin
                 state = 6; //microwaving/processing state on HIGH POWER    
             end
-
             else if(start_button == 1 && state == 0 ) begin
                 state = 2; //microwaving/processing state on HALF POWER
             end
-            
-            else if(door_status == 0 && (state == 2 || state == 4 || state == 6) )begin
-                state = 3; //stopped processing state (no programming allowed)
-            end
-
-            else if(door_status == 1 && state == 3)begin
-                state = 4; //reprogram processing state (allowed reprogramming)
-            end
-
-            else if(start_button == 1 && state == 4 && regPower == 1)begin
+            else if(start_button == 1 && state == 3 && regPower == 1)begin
                 state = 6;//microwaving/processing state on HIGH POWER
             end
-
-            else if(start_button == 1 && state == 4)begin
+            else if(start_button == 1 && state == 3)begin
                 state = 2;//microwaving/processing state on LOW POWER 
             end
-            
-            else if(stateTimer == 0 && (state == 2 || state == 6))begin //timer counter == 0 
+            else if(stateTimerCount == 0 && (state == 2 || state == 6))begin //timer counter == 0 
                 state = 5;//Done state
             end
-            
-            else if(door_status == 0 && state == 5)begin
-                state = 0;
-            end
-            
         end
     end
 
@@ -181,8 +169,7 @@ module inputController( input clk,
     initial writeEnable = 0;
     initial reset = 1;
     always @(posedge clk or state or door_status)begin
-        if( (state == 0 && door_status ==1) || state == 4) begin
-            
+        if((state == 0 && door_status ==1) || state == 4) begin
             decrEnable = 0;
             writeEnable = 1;
             reset = 0;
@@ -222,10 +209,14 @@ module timercounter(input clk,
 
   
     initial timercount = 60;
-    always @(posedge clk or posedge writeEnable ) begin
-        if(writeEnable) begin
+    always @(timer)begin
+        timercount = timer;
+    end
+    always @(posedge clk or decrEnable or reset) begin
+        /*if(writeEnable) begin
             timercount = timer;
         end
+        */
         if(reset) begin
             timercount = 60;
         end

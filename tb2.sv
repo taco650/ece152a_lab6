@@ -42,9 +42,9 @@ initial begin
     start_button <= 0; // start button not pressed
     cancel_button <= 0; // cancel button not pressed
     
+    #CLK //1 clock cycle to place food
     //Possible scenario 2
-    door_status = 0; //open door, place food
-    door_status = 1; //close door
+    door_status <= 1; //close door
     power <= 0; //set power (HALF)
     timer <= 7'b1100100; //set timer (100s)
     start_button <= 1; 
