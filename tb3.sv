@@ -43,8 +43,8 @@ initial begin
     cancel_button <= 0; // cancel button not pressed
 
     //Possible scenario 3
-    door_status = 0; //open door, place food
-    door_status = 1; //close door
+    #CLK
+    door_status <= 1; //close door
     power <= 0; //set power (FULL)
     timer <= 7'b1100100; //set timer (100s)
     start_button <= 1; //push button
