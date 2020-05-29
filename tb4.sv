@@ -45,15 +45,16 @@ initial begin
     //Possible scenario 4
     #CLK
     door_status <= 1; //close door
-    power <= 0; //set power (FULL)
+    power <= 1; //set power (FULL)
     timer <= 7'b1100100; //set timer (100s)
     start_button <= 1; //push button
     #5 start_button <= 0;
     #(30*CLK) //wait for 30 seconds
     cancel_button <= 1; //press cancel button
     #5 cancel_button <= 0;
-    door_status = 0; //open door
-    
+    #CLK
+    door_status <= 0; //open door
+    #CLK
     // write test bench for possible scenarios 2 , 3 and 4
     // end simulation
     $finish;

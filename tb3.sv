@@ -45,7 +45,7 @@ initial begin
     //Possible scenario 3
     #CLK
     door_status <= 1; //close door
-    power <= 0; //set power (FULL)
+    power <= 1; //set power (FULL)
     timer <= 7'b1100100; //set timer (100s)
     start_button <= 1; //push button
     #5 start_button <= 0;
@@ -53,7 +53,10 @@ initial begin
     door_status <= 0; //open door, remove food, place food back
     #CLK
     door_status <= 1; //close door
+    start_button <= 1; //push button
     timer <= 7'b110010; //reset timer (50 seconds)
+
+    #5 start_button <= 0;
     #(CLK*50+5) //wait for cooking to finish
     door_status <= 0; //open door, remove food, place food back
     #CLK

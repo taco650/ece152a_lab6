@@ -212,7 +212,7 @@ module timercounter(input clk,
     always @(timer)begin
         timercount = timer;
     end
-    always @(posedge clk or decrEnable or reset) begin
+    always @(posedge clk or reset) begin
         /*if(writeEnable) begin
             timercount = timer;
         end
